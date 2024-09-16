@@ -1,5 +1,6 @@
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
+from .logger import Logger
 
 class KMeansConnector:
 
@@ -16,12 +17,15 @@ class KMeansConnector:
 
         self.kmeans = KMeans(featuresCol=self.features_col, k=self.k)
 
+    @Logger.cls_se_log("Обучение модели кластеризации")
     def fit(self, data):
         self.model = self.kmeans.fit(data)
 
+    @Logger.cls_se_log("Оценка качества модели кластеризации")
     def evaluate(self, predictions):
         return self.evaluator.evaluate(predictions)
-        
+    
+    @Logger.cls_se_log("Получение предсказаний от обученной модели")
     def predict(self, data):
         return self.model.transform(data)
         

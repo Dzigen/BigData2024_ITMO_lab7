@@ -1,4 +1,5 @@
 from pyspark.ml.feature import VectorAssembler, StandardScaler
+from .logger import Logger
 
 class Preprocessor:
     def __init__(self, logger) -> None:
@@ -7,6 +8,7 @@ class Preprocessor:
         self.separator = '\t'
         self.log = logger
 
+    @Logger.cls_se_log("Загрузка датасета в spark")
     def load(self, path_to_data, spark, base_features):
         dataset = spark.read.csv(
             path_to_data,
@@ -24,6 +26,7 @@ class Preprocessor:
         vectorized_data = vector_assembler.transform(dataset)
         return vectorized_data
     
+    @Logger.cls_se_log("Применение к экземпларам датасета StandardScaler-трансформации")
     def apply_scale(self, vectorized_data):
         scaler = StandardScaler(
             inputCol=self.features_name,
