@@ -4,14 +4,15 @@ from .logger import Logger
 
 class KMeansConnector:
 
-    def __init__(self, k, features_col, logger) -> None:
+    def __init__(self, k, features_col, logger, metric_name: str = 'silhouette') -> None:
         self.k = k
         self.log = logger
+        self.eval_metric = metric_name
         self.features_col = features_col
         self.evaluator = ClusteringEvaluator(
             predictionCol='prediction',
             featuresCol=features_col,
-            metricName='silhouette',
+            metricName=self.eval_metric,
             distanceMeasure='squaredEuclidean'
         )
 
