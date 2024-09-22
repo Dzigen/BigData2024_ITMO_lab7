@@ -1,5 +1,7 @@
 from pyspark.ml.feature import VectorAssembler, StandardScaler
+from typing import List
 from .logger import Logger
+from .db_connector import MySQLConnector
 
 class Preprocessor:
     def __init__(self, logger) -> None:
@@ -8,14 +10,9 @@ class Preprocessor:
         self.separator = '\t'
         self.log = logger
 
-    @Logger.cls_se_log("Загрузка датасета в spark")
-    def load(self, path_to_data, spark, base_features):
-        dataset = spark.read.csv(
-            path_to_data,
-            header=True,
-            inferSchema=True,
-            sep=self.separator,
-        )
+    @Logger.cls_se_log("Загрузка датасета из БД")
+    def load(self, db_connector: MySQLConnector, table: str, base_features: List[str]):
+        dataset = db_connector.read(table)
 
         vector_assembler = VectorAssembler(
             inputCols=base_features,
