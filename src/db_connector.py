@@ -17,7 +17,7 @@ class MySQLConnector:
         self.spark = spark
         self.log = logger
     
-    @Logger.cls_se_log("Чтение датасета из БД")
+    @Logger.cls_se_log("Чтение датасета из таблицы БД")
     def read(self, table: str):
         return self.spark.read \
             .format("jdbc") \
@@ -28,7 +28,7 @@ class MySQLConnector:
             .option("inferSchema", "true") \
             .load()
     
-    @Logger.cls_se_log("Запись датасета в БД")
+    @Logger.cls_se_log("Добавление новой записи в таблицу БД")
     def write(self, df, table: str) -> None:
         df.write \
             .format("jdbc") \
