@@ -40,7 +40,7 @@ class DataMart(host: String) {
   private val logger = Logger("Logger")
 
   def main(args: Array[String]): Unit = {
-    val transformed = readPreprocessedOpenFoodFactsDataset()
+    val transformed = read_transform_dataset()
     transformed.write.mode(SaveMode.Overwrite).parquet(PARQUET_PATH)
     while (true) {
       Thread.sleep(1000)
