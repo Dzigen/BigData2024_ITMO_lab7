@@ -49,7 +49,7 @@ class DataMart(host: String) {
 
   def read_transform_dataset(): DataFrame = {
     val data = db.read("samples")
-    logger.info("OpenFact-датасет загружен успешно!")
+    logger.info("OpenFoodFacts-датасет загружен успешно!")
 
     logger.info("Применение трансформаций к даатсету...")
     val transforms: Seq[DataFrame => DataFrame] = Seq(
