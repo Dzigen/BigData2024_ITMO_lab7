@@ -9,7 +9,7 @@ object Preprocessor {
   private val logger = Logger("Logger")
 
   def load(df: DataFrame): DataFrame = {
-    logger.info("Start dataset loading...")
+    logger.info("Старт загрузки датасета из БД...")
     val outputCol = "features"
     val inputCols = "code" :: "created_t" :: "last_modified_t" :: "completeness"
 
@@ -18,18 +18,18 @@ object Preprocessor {
       .setOutputCol(outputCol)
       .setHandleInvalid("skip")
     val result = vector_assembler.transform(df)
-    logger.info("Dataset is loaded!")
+    logger.info("Датасет загружен!")
     result
   }
 
   def apply_scale(df: DataFrame): DataFrame = {
-    logger.info("Start dataset scaling...")
+    logger.info("Старт применения к экземпларам датасета StandardScaler-трансформации")
     val scaler = new StandardScaler()
       .setInputCol("features")
       .setOutputCol("scaled_features")
     val scalerModel = scaler.fit(df)
     val result = scalerModel.transform(df)
-    logger.info("Dataset is scaled!")
+    logger.info("Трансформация применена!")
     result
   }
 }
