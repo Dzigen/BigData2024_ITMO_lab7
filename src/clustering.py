@@ -1,12 +1,17 @@
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
+from typing import List
 from .logger import Logger
+from .db_connector import MySQLConnector
 
 class KMeansConnector:
 
-    def __init__(self, k, features_col, logger, metric_name: str = 'silhouette') -> None:
+    def __init__(self, k: int, features_col: List[str], 
+                 logger: Logger, db_connector: MySQLConnector, 
+                 metric_name: str = 'silhouette') -> None:
         self.k = k
         self.log = logger
+        self.db = db_connector
         self.eval_metric = metric_name
         self.features_col = features_col
         self.evaluator = ClusteringEvaluator(
@@ -28,5 +33,7 @@ class KMeansConnector:
     
     @Logger.cls_se_log("Получение предсказаний от обученной модели")
     def predict(self, data):
-        return self.model.transform(data)
+        predictions = self.model.transform(data)
+        self.db.write(predictions.select("prediction"), self.db.config.predictions_table)
+        return predictions
         

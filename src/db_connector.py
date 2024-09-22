@@ -9,6 +9,8 @@ class MySQLConnectorConfig:
     database: str = "dataset"
     username: str = "root"
     password: str = "password"
+    samples_table: str = "samples"
+    predictions_table: str = "predictions"
 
 class MySQLConnector:
     def __init__(self, spark, logger, config: MySQLConnectorConfig = MySQLConnectorConfig()):
