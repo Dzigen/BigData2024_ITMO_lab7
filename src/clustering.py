@@ -7,11 +7,11 @@ from .db_connector import MySQLConnector
 class KMeansConnector:
 
     def __init__(self, k: int, features_col: List[str], 
-                 logger: Logger, db_connector: MySQLConnector, 
+                 logger: Logger,  db_conn: MySQLConnector, 
                  metric_name: str = 'silhouette') -> None:
         self.k = k
         self.log = logger
-        self.db = db_connector
+        self.db = db_conn
         self.eval_metric = metric_name
         self.features_col = features_col
         self.evaluator = ClusteringEvaluator(

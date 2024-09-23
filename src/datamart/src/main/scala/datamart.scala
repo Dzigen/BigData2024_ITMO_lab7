@@ -1,19 +1,18 @@
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession, SaveMode}
 import preprocess.{Preprocessor}
 import db.{MySQLConnector}
 import com.typesafe.scalalogging.Logger
 
-
-class DataMart(host: String) {
+object DataMart {
   private val USER = "root"
   private val PASSWORD = "password"
   private val APP_NAME = "Clustering"
-  private val DEPLOY_MODE = "local"
+  private val DEPLOY_MODE = "local[*]"
   private val DRIVER_MEMORY = "2g"
   private val EXECUTOR_MEMORY = "2g"
   private val EXECUTOR_CORES = 1
   private val DRIVER_CORES = 1
-  private val MYSQL_CONNECTOR_JAR = "../../jars/mysql-connector-j-8.4.0.jar"
+  private val MYSQL_CONNECTOR_JAR = "/opt/spark/jars/mysql-connector-j-8.4.0.jar"
   private val PARQUET_PATH = "/shared/parquet_openfoodfacts.parquet"
   private val DYNAMIC_ALLOCATION = true
   private val MIN_EXECUTORS = 1
@@ -23,8 +22,6 @@ class DataMart(host: String) {
   val session = SparkSession.builder
     .appName(APP_NAME)
     .master(DEPLOY_MODE)
-    .config("spark.driver.host", host)
-    .config("spark.driver.bindAddress", host)
     .config("spark.driver.cores", DRIVER_CORES)
     .config("spark.executor.cores", EXECUTOR_CORES)
     .config("spark.driver.memory", DRIVER_MEMORY)
@@ -35,15 +32,17 @@ class DataMart(host: String) {
     .config("spark.dynamicAllocation.initialExecutors", INITIAL_EXECUTORS)
     .config("spark.jars", MYSQL_CONNECTOR_JAR)
     .config("spark.driver.extraClassPath", MYSQL_CONNECTOR_JAR)
+    .config("spark.executor.extraClassPath", MYSQL_CONNECTOR_JAR)
     .getOrCreate()
-  private val db = new MySQLConnector(session, host)
+
+  private val db = new MySQLConnector(session)
   private val logger = Logger("Logger")
 
   def main(args: Array[String]): Unit = {
-    val transformed = read_transform_dataset()
-    transformed.write.mode(SaveMode.Overwrite).parquet(PARQUET_PATH)
     while (true) {
-      Thread.sleep(1000)
+      val transformed = read_transform_dataset()
+      transformed.write.mode(SaveMode.Overwrite).parquet(PARQUET_PATH)
+      Thread.sleep(10000)
     }
   }
 
@@ -53,8 +52,8 @@ class DataMart(host: String) {
 
     logger.info("Применение трансформаций к даатсету...")
     val transforms: Seq[DataFrame => DataFrame] = Seq(
-      Preprocessor.assembleVector,
-      Preprocessor.scaleAssembledDataset
+      Preprocessor.assemble,
+      Preprocessor.apply_scale
     )
     val transformed = transforms.foldLeft(data) { (df, f) => f(df) }
     logger.info("Все трансформации были применены успешно!")

@@ -2,10 +2,11 @@ package db
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import com.typesafe.scalalogging.Logger
 
-class MySQLConnector(spark: SparkSession, host: String) {
+class MySQLConnector(spark: SparkSession) {
+  private val HOST = "mysql_service"
   private val PORT = 3306
   private val DATABASE = "dataset"
-  private val JDBC_URL = s"jdbc:mysql://$host:$PORT/$DATABASE"
+  private val JDBC_URL = s"jdbc:mysql://$HOST:$PORT/$DATABASE"
   private val USER = "root"
   private val PASSWORD = "password"
 

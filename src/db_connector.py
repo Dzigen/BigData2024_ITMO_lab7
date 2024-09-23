@@ -40,4 +40,3 @@ class MySQLConnector:
             .option("dbtable", table) \
             .mode("append") \
             .save()
-            

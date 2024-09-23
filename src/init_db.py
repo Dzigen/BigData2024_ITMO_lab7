@@ -3,7 +3,7 @@ import pandas as pd
 import configparser
 import os
 
-CONFIG_PATH = '../config.ini'
+CONFIG_PATH = '../configs/config.ini'
 
 config = configparser.ConfigParser()
 config.read(CONFIG_PATH)
